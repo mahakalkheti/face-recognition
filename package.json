@@ -1,0 +1,23 @@
+{
+  "name": "hyy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "setup:python": "powershell -ExecutionPolicy Bypass -File .\\setup-python.ps1",
+    "py:capture": "powershell -ExecutionPolicy Bypass -File .\\run-python.ps1 capture_faces.py",
+    "py:train": "powershell -ExecutionPolicy Bypass -File .\\run-python.ps1 train_model.py",
+    "py:recognize": "powershell -ExecutionPolicy Bypass -File .\\run-python.ps1 recognize_attendance.py",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "ejs": "^5.0.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.4.1"
+  }
+}

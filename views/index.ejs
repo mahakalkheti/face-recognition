@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Attendance</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <main class="page-shell">
+        <section class="hero-card">
+            <div class="hero-copy">
+                <p class="eyebrow">College Staff Attendance</p>
+                <h1>Teacher / Staff Attendance System</h1>
+                <p class="hero-text">
+                    Teacher ya staff ka face capture karo, joining date save karo, aur attendance live mark karo.
+                </p>
+                <div class="hero-actions">
+                    <a href="/attendance" class="btn btn-primary">Open Attendance Dashboard</a>
+                    <a href="#student-form" class="btn btn-secondary">Register Teacher</a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <article class="stat-card">
+                    <span class="stat-label">Registered Labels</span>
+                    <strong class="stat-value"><%= typeof studentCount !== 'undefined' ? studentCount : 0 %></strong>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-label">Today Attendance</span>
+                    <strong class="stat-value"><%= typeof todayAttendanceCount !== 'undefined' ? todayAttendanceCount : 0 %></strong>
+                </article>
+            </div>
+        </section>
+
+        <section class="grid-layout">
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Teacher Registration + Face Enrollment</h2>
+                    <p>Ek baar teacher info bharo, joining date add karo, camera se face samples capture karo, aur system ko train karo.</p>
+                </div>
+
+                <form id="student-form" class="stack-form">
+                    <label>
+                        <span>Name</span>
+                        <input type="text" name="name" placeholder="Raj Patel" required>
+                    </label>
+                    <label>
+                        <span>Face Label</span>
+                        <input type="text" name="faceLabel" placeholder="raj_patel" required>
+                    </label>
+                    <label>
+                        <span>Joining Date</span>
+                        <input type="date" name="joiningDate" required>
+                    </label>
+                    <label>
+                        <span>Staff ID</span>
+                        <input type="text" name="rollNumber" placeholder="TCH-101">
+                    </label>
+                    <label>
+                        <span>Department</span>
+                        <input type="text" name="department" placeholder="Computer Science">
+                    </label>
+                    <label>
+                        <span>Email</span>
+                        <input type="email" name="email" placeholder="raj@example.com">
+                    </label>
+                    <div class="camera-shell enrollment-shell">
+                        <div class="camera-frame">
+                            <video id="enrollment-camera-feed" autoplay playsinline muted></video>
+                            <canvas id="enrollment-camera-canvas" hidden></canvas>
+                        </div>
+                        <div class="camera-controls">
+                            <button type="button" id="start-enrollment-camera" class="btn btn-secondary">Start Enrollment Camera</button>
+                            <button type="button" id="capture-enrollment" class="btn btn-secondary">Capture Face Samples</button>
+                            <button type="button" id="stop-enrollment-camera" class="btn btn-secondary">Stop Camera</button>
+                        </div>
+                        <p id="enrollment-camera-status" class="helper-text">Camera off hai. Student register karne se pehle face samples capture karo.</p>
+                        <p id="enrollment-sample-status" class="form-status">Required samples: 6 minimum. Recommended: 12.</p>
+                    </div>
+                    <div id="enrollment-preview" class="sample-grid"></div>
+                    <button type="submit" class="btn btn-primary">Save Teacher And Train Face</button>
+                    <p id="student-form-status" class="form-status"></p>
+                </form>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>System Workflow</h2>
+                    <p>Flow ab 2 parts me kaam karega: enrollment ek baar, attendance daily alag page par.</p>
+                </div>
+
+                <div class="code-card">
+                    <pre><code>1. Home page par student details + face samples save karo
+2. System automatically dataset store karega
+3. System automatically embeddings train karega
+4. Attendance page kholo
+5. Student camera ke saamne aate hi attendance mark ho jayegi</code></pre>
+                </div>
+
+                <ol class="steps-list">
+                    <li>Student info aur exact `faceLabel` bharo.</li>
+                    <li>`Capture Face Samples` se face images lo.</li>
+                    <li>`Save Student And Train Face` click karo.</li>
+                    <li>Attendance ke liye top button se dedicated page kholo.</li>
+                </ol>
+
+                <div class="hero-actions">
+                    <a href="/attendance" class="btn btn-primary">Open Attendance Scan Page</a>
+                </div>
+            </section>
+        </section>
+
+        <section class="grid-layout">
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Recent Teachers</h2>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Label</th>
+                                <th>Joining</th>
+                                <th>Department</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table-body">
+                            <% const safeStudents = typeof students !== 'undefined' ? students : []; %>
+                            <% if (safeStudents.length === 0) { %>
+                                <tr>
+                                    <td colspan="4">No teachers added yet.</td>
+                                </tr>
+                            <% } %>
+                            <% safeStudents.forEach((student) => { %>
+                                <tr>
+                                    <td><%= student.name %></td>
+                                    <td><code><%= student.faceLabel %></code></td>
+                                    <td><%= student.joiningDate ? new Date(student.joiningDate).toLocaleDateString() : '-' %></td>
+                                    <td><%= student.department || '-' %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Recent Attendance</h2>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Time</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body">
+                            <% const safeRecentAttendance = typeof recentAttendance !== 'undefined' ? recentAttendance : []; %>
+                            <% if (safeRecentAttendance.length === 0) { %>
+                                <tr>
+                                    <td colspan="3">No attendance marked yet.</td>
+                                </tr>
+                            <% } %>
+                            <% safeRecentAttendance.forEach((record) => { %>
+                                <tr>
+                                    <td><%= record.student ? record.student.name : record.faceLabel %></td>
+                                    <td><%= new Date(record.markedAt).toLocaleString() %></td>
+                                    <td><%= Number(record.confidence || 0).toFixed(3) %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="/script.js"></script>
+</body>
+</html>

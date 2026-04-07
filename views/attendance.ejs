@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <main class="page-shell">
+        <section class="hero-card compact">
+            <div class="hero-copy">
+                <p class="eyebrow">Live Attendance Monitor</p>
+                <h1>Attendance Scan Page</h1>
+                <p class="hero-text">
+                    Student jaise hi camera ke saamne aayega, system uska face recognize karke aaj ki attendance present mark kar dega.
+                </p>
+                <div class="hero-actions">
+                    <a href="/" class="btn btn-secondary">Back Home</a>
+                    <button id="refresh-attendance" class="btn btn-primary">Refresh Records</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Live Attendance Camera</h2>
+                <p>Camera start karo. Page har 3 seconds me teacher ka face scan karke attendance mark karega.</p>
+            </div>
+            <div class="camera-shell">
+                <div class="camera-frame">
+                    <video id="camera-feed" autoplay playsinline muted></video>
+                    <canvas id="camera-canvas" hidden></canvas>
+                </div>
+                <div class="camera-controls">
+                    <button type="button" id="start-camera" class="btn btn-primary">Start Attendance Camera</button>
+                    <button type="button" id="scan-now" class="btn btn-secondary">Scan Now</button>
+                    <button type="button" id="stop-camera" class="btn btn-secondary">Stop Camera</button>
+                </div>
+                <p id="camera-status" class="helper-text">Camera off hai.</p>
+                <p id="camera-loader" class="helper-text"></p>
+                <p id="recognition-result" class="form-status">Recognition ready hone ke liye trained teacher faces required hain.</p>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Today Records</h2>
+                <p id="attendance-page-status" class="helper-text">Latest records shown below.</p>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Label</th>
+                            <th>Marked At</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendance-page-body">
+                        <% const safeRecords = typeof records !== 'undefined' ? records : []; %>
+                        <% if (safeRecords.length === 0) { %>
+                            <tr>
+                                <td colspan="4">No records found for today.</td>
+                            </tr>
+                        <% } %>
+                        <% safeRecords.forEach((record) => { %>
+                            <tr>
+                                <td><%= record.student ? record.student.name : record.faceLabel %></td>
+                                <td><code><%= record.faceLabel %></code></td>
+                                <td><%= new Date(record.markedAt).toLocaleString() %></td>
+                                <td><%= Number(record.confidence || 0).toFixed(3) %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="/script.js"></script>
+</body>
+</html>
